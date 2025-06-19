@@ -38,7 +38,7 @@ void sendSMS() {
   // Replace MESSAGE_CONTENT with the content of your message
   gsmSerial.print("AT+CMGS=\"0740390420\"\r");
   delay(1000);
-  gsmSerial.print("GSM inawork");
+  gsmSerial.print("Hello GSM");
   delay(100);
   gsmSerial.write(26); // ASCII code for Ctrl+Z
   delay(1000);
