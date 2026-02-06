@@ -1,33 +1,46 @@
-/* www.learningbuz.com */
-/*Impport following Libraries*/
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
-//I2C pins declaration
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
+#include <Wire.h>
 
-void setup() 
-{
+void setup() {
+  Wire.begin();
 
-lcd.begin(16,2);//Defining 16 columns and 2 rows of lcd display
-lcd.backlight();//To Power ON the back light
-//lcd.backlight();// To Power OFF the back light
-
+  Serial.begin(9600);
+  while (!Serial); // Leonardo: wait for serial monitor
+  Serial.println("\nI2C Scanner");
 }
 
-void loop() 
-{
-//Write your code
-lcd.setCursor(0,0); //Defining positon to write from first row,first column .
-lcd.print(" Tech Maker "); //You can write 16 Characters per line .
-delay(1000);//Delay used to give a dynamic effect
-lcd.setCursor(0,1);  //Defining positon to write from second row,first column .
-lcd.print("Hello Tinkacode");
-delay(8000); 
+void loop() {
+  int nDevices = 0;
 
-lcd.clear();//Clean the screen
-lcd.setCursor(0,0); 
-lcd.print(" CODE ");
-lcd.setCursor(0,1);
-lcd.print(" Creat");
-delay(8000); 
+  Serial.println("Scanning...");
+
+  for (byte address = 1; address < 127; ++address) {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+    Wire.beginTransmission(address);
+    byte error = Wire.endTransmission();
+
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) {
+        Serial.print("0");
+      }
+      Serial.print(address, HEX);
+      Serial.println("  !");
+
+      ++nDevices;
+    } else if (error == 4) {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16) {
+        Serial.print("0");
+      }
+      Serial.println(address, HEX);
+    }
+  }
+  if (nDevices == 0) {
+    Serial.println("No I2C devices found\n");
+  } else {
+    Serial.println("done\n");
+  }
+  delay(5000); // Wait 5 seconds for next scan
 }
